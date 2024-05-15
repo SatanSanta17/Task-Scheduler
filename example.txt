@@ -1,0 +1,30 @@
+ndNlk0EKhr7kwz3W
+burhanuddinchital25151
+ndNlk0EKhr7kwz3W
+
+MONGO_URL= "mongodb+srv://burhanuddinchital25151:ndNlk0EKhr7kwz3W@tasks.p2zch6w.mongodb.net/"
+
+
+
+							
+						<tbody>
+							{% if tasks %}
+								{% for task in tasks %}
+								<tr>
+									<td class="text-center">{{ loop.index }}</td>
+									<td class="text-center">{{ task.title }}</td>
+									<td class="text-center">{{ task.intensity }}</td>
+									<td class="text-center">{{ task.status }}</td>
+									<td class="text-center">{{ task.deadline }}</td>
+									<td class="d-flex justify-content-around">
+										<a href=""><i class="fas fa-eye"></i></a>
+										<a href=""><i class="fas fa-trash-alt"></i></a>
+									</td>
+								</tr>
+								{% endfor %}
+							{% else %}
+								<tr>
+									<td colspan="6" class="text-center">No tasks available</td>
+								</tr>
+							{% endif %}
+						</tbody>

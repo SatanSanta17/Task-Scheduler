@@ -11,16 +11,117 @@
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
+
+		<!-- JQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://kit.fontawesome.com/3b24b02539.js" crossorigin="anonymous"></script>
+
+
 	</head>
 	<body>
-		<div class="container">
-			<h1>Welcome to the task scheduler</h1>
-			<div id="searchBar"></div>
-			<div id="addTask"></div>
-			<div id="taskBoard"></div>
-		</div>
+		<main>
+			<!-- NavBar -->
+			<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+				<a class="navbar-brand" href="#">Navbar</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				  <span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				  <ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+					  <a class="nav-link" href="/">Home</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" href="#">Link</a>
+					</li>
+					<li class="nav-item dropdown">
+					  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Dropdown
+					  </a>
+					  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#">Something else here</a>
+					  </div>
+					</li>
+				  </ul>
+				  <form class="form-inline my-2 my-lg-0">
+					<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+					<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+				  </form>
+				</div>
+			</nav>
+			<div class="container">
+				<div id="addTask" class="d-flex justify-content-center align-items-center my-sm-4">
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#exampleModal">
+						Add Task
+					</button>
+					<!-- Modal -->
+					<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div> 
+								
+								<form action="/create" method="POST">
+									<div class="modal-body p-3">
+										<div class="form-group">
+											<label for="taskName" class="required">Task Name: </label>
+											<input type="text" placeholder="task" class="form-control" name="taskName" required>
+										</div>
+										<div class="form-row">
+											<div class="form-group col-6">
+												<label for="intensity">Intensity: </label> <br/>
+												<select name="intensity" id="intensity" class="form-select">
+													<option value="" selected disabled>select intensity</option>
+													<option value="0">low</option>
+													<option value="1">medium</option>
+													<option value="2">high</option>
+												</select>
+											</div>
+											<div class="form-group col-6">
+												<label for="deadline">Deadline: </label>
+												<input type="date" id="deadline" name="deadline" class="form-control">
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+										<button type="submit" class="btn btn-success">Save changes</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="taskBoard">
+					<table class="table table-bordered table-hover rounded">
+						<caption>Task Board</caption>
+						<thead class="thead-dark">
+						  <tr>
+							<th scope="col" class="text-center" >#</th>
+							<th scope="col" class="text-center" >Task</th>
+							<th scope="col" class="text-center" >Intensity</th>
+							<th scope="col" class="text-center" >Status</th>
+							<th scope="col" class="text-center" >Deadline</th>
+							<th scope="col" class="text-center" >Actions</th>
+						  </tr>
+						</thead>
+						
+					</table>
+				</div>
+			</div>
+			<footer></footer>
+		</main>
 		<script src="../../static/js/script.js"></script>
 		<!-- Bootstrap JS (optional) -->
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 	</body>
 </html>
