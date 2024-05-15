@@ -6,25 +6,49 @@ MONGO_URL= "mongodb+srv://burhanuddinchital25151:ndNlk0EKhr7kwz3W@tasks.p2zch6w.
 
 
 
-							
-						<tbody>
-							{% if tasks %}
-								{% for task in tasks %}
-								<tr>
-									<td class="text-center">{{ loop.index }}</td>
-									<td class="text-center">{{ task.title }}</td>
-									<td class="text-center">{{ task.intensity }}</td>
-									<td class="text-center">{{ task.status }}</td>
-									<td class="text-center">{{ task.deadline }}</td>
-									<td class="d-flex justify-content-around">
-										<a href=""><i class="fas fa-eye"></i></a>
-										<a href=""><i class="fas fa-trash-alt"></i></a>
-									</td>
-								</tr>
-								{% endfor %}
+				<table class="table table-bordered table-hover rounded">
+					<caption>Task Board</caption>
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col" class="text-center">#</th>
+							<th scope="col" class="text-center">Task</th>
+							<th scope="col" class="text-center">Intensity</th>
+							<th scope="col" class="text-center">Status</th>
+							<th scope="col" class="text-center">Deadline</th>
+							<th scope="col" class="text-center">Actions</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{% if tasks %}
+						{% for task in tasks %}
+						<tr>
+							<td class="text-center" scope="row">{{ loop.index }}</td>
+							<td class="text-center">{{ task.title }}</td>
+							{% if task.intensity == "0" %}
+							<td class="text-center">
+								<span class="text-bg-info">low</span>
+							</td>
+							{% elif task.intensity == "1" %}
+							<td class="text-center">medium</td>
 							{% else %}
-								<tr>
-									<td colspan="6" class="text-center">No tasks available</td>
-								</tr>
+							<td class="text-center">high</td>
 							{% endif %}
-						</tbody>
+
+							<!-- <td class="text-center">{{ task.intensity }}</td> -->
+							<td class="text-center">{{ task.status }}</td>
+							<td class="text-center">{{ task.deadline }}</td>
+							<td class="d-flex justify-content-around">
+								<a href=""><i class="fas fa-eye"></i></a>
+								<a href=""><i class="fas fa-trash-alt"></i></a>
+							</td>
+						</tr>
+						{% endfor %}
+						{% else %}
+						<tr>
+							<td colspan="6" class="text-center">No tasks available</td>
+						</tr>
+						{% endif %}
+					</tbody>
+
+				</table>

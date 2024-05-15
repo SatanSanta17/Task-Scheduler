@@ -37,9 +37,35 @@ def create_task():
 
     # Create a new Task object with the form data
     task = Task(title=title, intensity=intensity,
-                status="Pending", deadline=deadline)
+                status="0", deadline=deadline)
     # Save the task to the database
     task_id = task.save()
 
     # Redirect back to the index page
     return redirect(url_for('main.index'))
+
+
+@bp.route('/edit_task', methods=['POST'])
+def edit_task():
+    from .models.task import Task
+    task_id = request.form.get('task_id')
+    edited_task_name = request.form.get('editTaskName')
+    edited_intensity = request.form.get('editIntensity')
+    edited_status = request.form.get('editStatus')
+    edited_deadline = request.form.get('editDeadline')
+
+    # Update the task with the edited information
+    Task.update(task_id, title=edited_task_name, intensity=edited_intensity, status=edited_status, deadline=edited_deadline)
+
+    # Redirect the user back to the homepage or wherever you want
+    return redirect(url_for('main.index'))
+
+@bp.route('/delete', methods=['POST'])
+def delete_entry():
+    from .models.task import Task
+    task_id = request.form.get('taskId')
+    if task_id:
+        Task.delete(task_id)
+        return 'Entry deleted successfully', 200
+    else:
+        return 'Task ID not provided', 400
