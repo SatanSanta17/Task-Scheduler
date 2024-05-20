@@ -30,34 +30,6 @@
       <!-- JQuery -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       
-      <!-- <script defer>
-        document.addEventListener('DOMContentLoaded', ()=>{
-          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-          checkboxes.forEach((checkbox)=>{
-            checkbox.addEventListener('change', handleCheckboxChange);
-          });
-        });
-
-        function handleCheckboxChange(event){
-          const checkbox = event.target;
-          console.log("event occured");
-          
-          
-          updateSelectedValue();
-        }
-
-        function updateSelectedValue(){
-          const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-          let selectedList = [];
-          checkboxes.forEach((checkbox)=>{
-            selectedList.push(checkbox.value);
-          });
-          console.log("selected values", selectedList)
-        }
-
-      </script> -->
-
-
       <script defer>
         document.addEventListener('DOMContentLoaded', ()=>{
           const radios = document.querySelectorAll('input[type="radio"]');
@@ -75,16 +47,7 @@
         function updateSelectedValue(){
           const radio = document.querySelector(`input[type="radio"]:checked`);
           // const selectedValue = radio ? radio.value : null;
-          console.log(document.getElementById('taskData'));
-          
-          // try {
-          //   // const listOfTasks = JSON.parse(document.getElementById('taskData').dataset.tasks);
-          //   // console.log("tasks: ", listOfTasks);
-          //     // Use the parsed JSON data
-          // } catch (error) {
-          //   console.error('Error parsing JSON:', error);
-          //     // Handle the error (e.g., display an error message to the user)
-          // }
+          console.log("tasks: ", {{ tasks | tojson }});
 
         }
 
@@ -292,7 +255,7 @@
                   <th scope="col" class="text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody class="table-group-divider" id="taskData" data-tasks="{{ tasks | tojson | safe }}">
+              <tbody class="table-group-divider">
                 {% if tasks %} {% for task in tasks %}
                 <tr>
                   <td class="align-middle" scope="row">{{ loop.index }}</td>
