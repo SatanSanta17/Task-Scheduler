@@ -20,6 +20,76 @@
           text-align: center;
         }
       </style>
+
+      <!-- Bootstrap JS (optional) -->
+      <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"
+      ></script>
+      <!-- JQuery -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      
+      <!-- <script defer>
+        document.addEventListener('DOMContentLoaded', ()=>{
+          const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+          checkboxes.forEach((checkbox)=>{
+            checkbox.addEventListener('change', handleCheckboxChange);
+          });
+        });
+
+        function handleCheckboxChange(event){
+          const checkbox = event.target;
+          console.log("event occured");
+          
+          
+          updateSelectedValue();
+        }
+
+        function updateSelectedValue(){
+          const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+          let selectedList = [];
+          checkboxes.forEach((checkbox)=>{
+            selectedList.push(checkbox.value);
+          });
+          console.log("selected values", selectedList)
+        }
+
+      </script> -->
+
+
+      <script defer>
+        document.addEventListener('DOMContentLoaded', ()=>{
+          const radios = document.querySelectorAll('input[type="radio"]');
+          radios.forEach((radio)=>{
+            radio.addEventListener('change', handleRadioChange);
+          });
+        });
+
+        function handleRadioChange(event){
+          const radio = event.target;
+          console.log(`${radio.value} button clicked`);
+          updateSelectedValue();
+        }
+
+        function updateSelectedValue(){
+          const radio = document.querySelector(`input[type="radio"]:checked`);
+          // const selectedValue = radio ? radio.value : null;
+          console.log(document.getElementById('taskData'));
+          
+          // try {
+          //   // const listOfTasks = JSON.parse(document.getElementById('taskData').dataset.tasks);
+          //   // console.log("tasks: ", listOfTasks);
+          //     // Use the parsed JSON data
+          // } catch (error) {
+          //   console.error('Error parsing JSON:', error);
+          //     // Handle the error (e.g., display an error message to the user)
+          // }
+
+        }
+
+      </script>
+
     </head>
 
     <body>
@@ -74,9 +144,6 @@
                       <a class="dropdown-item" href="#">Something else here</a>
                     </li>
                   </ul>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                 </li>
               </ul>
               <form class="d-flex" role="search">
@@ -188,6 +255,31 @@
               </div>
             </div>
           </div>
+
+          <!-- Filters -->
+          <div class="filters d-flex justify-content-center align-items-center mb-4" id="filters">
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+              <input value="name" type="radio" class="btn-check" name="btnradio" id="sortByName" autocomplete="off">
+              <label class="btn btn-outline-primary" for="sortByName">Name</label>
+            
+              <input value="intensity" type="radio" class="btn-check" name="btnradio" id="sortByIntensity" autocomplete="off">
+              <label class="btn btn-outline-primary" for="sortByIntensity">Intensity</label>
+            
+              <input value="deadline" type="radio" class="btn-check" name="btnradio" id="sortByDeadline" autocomplete="off" checked>
+              <label class="btn btn-outline-primary" for="sortByDeadline">Deadline</label>
+            </div>
+            <!-- <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+              <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">
+              <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+            
+              <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+              <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+            
+              <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" checked>
+              <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+            </div> -->
+          </div>
+
           <div id="taskBoard" class="col-10 mx-auto">
             <table class="table table-hover rounded-3">
               <thead class="table-dark">
@@ -200,11 +292,11 @@
                   <th scope="col" class="text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody class="table-group-divider">
+              <tbody class="table-group-divider" id="taskData" data-tasks="{{ tasks | tojson | safe }}">
                 {% if tasks %} {% for task in tasks %}
                 <tr>
                   <td class="align-middle" scope="row">{{ loop.index }}</td>
-                  <td class="align-middle">{{ task.title }}</td>
+                  <td class="align-middle"><strong>{{ task.title|capitalize }}</strong></td>
                   {% if task.intensity == "0" %}
                   <td class="align-middle">
                     <span class="text-bg-info rounded-2 px-2 py-1">low</span>
@@ -224,13 +316,17 @@
                   <!-- <td class="align-middle">{{ task.intensity }}</td> -->
 
 
-				  {% if task.status == "0" %}
+				          {% if task.status == "0" %}
                   <td class="align-middle">
-                    <span class="text-bg-info rounded-2 px-2 py-1">Pending</span>
+                    <span class="text-bg-warning rounded-2 px-2 py-1">Pending</span>
+                  </td>
+                  {% elif task.status == "1" %}
+                  <td class="align-middle">
+                    <span class="text-bg-success rounded-2 px-2 py-1">Completed</span>
                   </td>
                   {% else %}
                   <td class="align-middle">
-                    <span class="text-bg-success rounded-2 px-2 py-1">Completed</span>
+                    <span class="text-bg-danger rounded-2 px-2 py-1">Incomplete</span>
                   </td>
                   {% endif %}
 
@@ -239,7 +335,7 @@
                   <td class="align-middle">
                     <button
                       type="button"
-                      class="btn btn-info"
+                      class="btn btn-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#editModal{{ task._id }}"
                     >
@@ -269,7 +365,7 @@
                           <div class="modal-body">
 							<form action="/edit_task" method="POST">
 							  <div class="form-group mb-3 text-start">
-								<label for="editTaskName" class="mx-2 mb-1">Task Name:</label>
+								<label for="editTaskName" class="mx-2 mb-1"> <strong>Task Name</strong></label>
 								<input
 								  type="text"
 								  class="form-control"
@@ -281,7 +377,7 @@
 							  </div>
 							  <div class="form-row">
 								<div class="form-group mb-3 text-start">
-								  <label for="editIntensity" class="mx-2 mb-1">Intensity:</label><br />
+								  <label for="editIntensity" class="mx-2 mb-1"> <strong>Intensity</strong></label><br />
 								  <select
 									name="editIntensity"
 									id="editIntensity"
@@ -293,14 +389,14 @@
 								  </select>
 								</div>
 								<div class="form-group mb-3 text-start">
-									<label for="editStatus" class="mx-2 mb-1">Status</label>
+									<label for="editStatus" class="mx-2 mb-1"><strong>Status</strong></label>
 									<select name="editStatus" id="editStatus" class="form-select">
 										<option value="0" {% if task.status == "0" %}selected{% endif %}>Pending</option>
 										<option value="1" {% if task.status == "1" %}selected{% endif %}>Completed</option>
 									</select>
 								</div>
 								<div class="form-group mb-3 text-start">
-								  <label for="editDeadline" class="mx-2 mb-1">Deadline:</label>
+								  <label for="editDeadline" class="mx-2 mb-1"><strong>Deadline</strong></label>
 								  <input
 									type="date"
 									class="form-control"
@@ -391,15 +487,7 @@
         </div>
         <footer></footer>
       </main>
-      <!-- Bootstrap JS (optional) -->
-      <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"
-      ></script>
-
-      <!-- JQuery -->
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      
       <script>
         function deleteEntry(taskId) {
           $.ajax({
@@ -419,6 +507,7 @@
             },
           });
         }
+      
       </script>
     </body>
   </html>

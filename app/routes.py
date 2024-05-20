@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, send_from_directory, request, redirect, url_for
+from flask import Flask, Blueprint, json, render_template, send_from_directory, request, redirect, url_for, jsonify
+from datetime import datetime
 # Create a Blueprint instance
 bp = Blueprint('main', __name__)
+
+
 
 # Route to serve CSS file
 
@@ -22,9 +25,25 @@ def send_js(path):
 @bp.route('/')
 def index():
     from .models.task import Task
-    tasks = Task.find_all()
+    # Fetch tasks from the database
+    
+    tasks_cursor = Task.find_all()
+    tasks = list(tasks_cursor)  # Convert Cursor to list
+    
+    # Convert ObjectId to string
+    for task in tasks:
+        task['_id'] = str(task['_id'])
+        if task['status'] == "0" and datetime.strptime(task['deadline'], '%Y-%m-%d').date() < datetime.now().date():
+            task['status'] = "2"  # Incomplete
+            Task.update(task['_id'], status="2")
+     # Apply combined sorting: deadline > intensity > name
+    tasks = sorted(tasks, key=lambda x: (
+        datetime.strptime(x['deadline'], '%Y-%m-%d'), 
+        -int(x['intensity']), 
+        x['title'].lower()
+    ))
+    
     return render_template('index.html', tasks=tasks)
-
 
 # Route to handle form submission
 @bp.route('/create', methods=['POST'])
