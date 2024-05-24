@@ -30,18 +30,30 @@ def index():
     tasks_cursor = Task.find_all()
     tasks = list(tasks_cursor)  # Convert Cursor to list
     
-    # Convert ObjectId to string
+    if tasks:
+        # Apply combined sorting: deadline > intensity > name
+        tasks = sorted(tasks, key=lambda x: (
+            datetime.strptime(x['deadline'], '%Y-%m-%d'), 
+            -int(x['intensity']), 
+            x['title'].lower()
+        ))
+    
     for task in tasks:
+        # Convert ObjectId to string
         task['_id'] = str(task['_id'])
-        if task['status'] == "0" and datetime.strptime(task['deadline'], '%Y-%m-%d').date() < datetime.now().date():
-            task['status'] = "2"  # Incomplete
-            Task.update(task['_id'], status="2")
-     # Apply combined sorting: deadline > intensity > name
-    tasks = sorted(tasks, key=lambda x: (
-        datetime.strptime(x['deadline'], '%Y-%m-%d'), 
-        -int(x['intensity']), 
-        x['title'].lower()
-    ))
+
+        # Update tasks' status if the deadline has passed
+        if task['status'] == "pending" and datetime.strptime(task['deadline'], '%Y-%m-%d').date() < datetime.now().date():
+            task['status'] = "incomplete"  # Incompletez
+            Task.update(task['_id'], status="incomplete")
+            
+        #update the intensity
+        if task['intensity'] == "0":
+            task['intensity'] = "low"
+        elif task['intensity'] == "1":
+            task['intensity'] = "medium"
+        elif task['intensity'] == "2":
+            task['intensity'] = "high"
     
     return render_template('index.html', tasks=tasks)
 
@@ -56,7 +68,7 @@ def create_task():
 
     # Create a new Task object with the form data
     task = Task(title=title, intensity=intensity,
-                status="0", deadline=deadline)
+                status="pending", deadline=deadline)
     # Save the task to the database
     task_id = task.save()
 

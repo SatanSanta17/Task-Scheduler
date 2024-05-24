@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <html lang="en">
-    <head>
+  <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>Task Scheduler</title>
@@ -19,6 +18,16 @@
         td {
           text-align: center;
         }
+
+      #dt-length-0, .dt-search {
+          /* display: none !important;  */
+          margin-bottom: 0.5rem !important;
+          margin-right: 0.5rem !important;
+      }
+      .navbar-nav .nav-item button:hover {
+        background-color: white;
+        /* Add any other styles you want for the hover effect */
+      }
       </style>
 
       <!-- Bootstrap JS (optional) -->
@@ -30,41 +39,20 @@
       <!-- JQuery -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       
-      <script defer>
-        document.addEventListener('DOMContentLoaded', ()=>{
-          const radios = document.querySelectorAll('input[type="radio"]');
-          radios.forEach((radio)=>{
-            radio.addEventListener('change', handleRadioChange);
-          });
-        });
+      <!-- DataTables CSS -->
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.css">
+      <!-- DataTables JS -->
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
 
-        function handleRadioChange(event){
-          const radio = event.target;
-          console.log(`${radio.value} button clicked`);
-          updateSelectedValue();
-        }
 
-        function updateSelectedValue(){
-          const radio = document.querySelector(`input[type="radio"]:checked`);
-          // const selectedValue = radio ? radio.value : null;
-          console.log("tasks: ", {{ tasks | tojson }});
-
-        }
-
-      </script>
-
-    </head>
-
-    <body>
-      <main>
-        <!-- NavBar -->
-        <nav
-          class="navbar sticky-top bg-dark navbar-expand-lg bg-body-tertiary"
-          data-bs-theme="dark"
-        >
-          <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
-            <button
+  </head>
+  <body>
+    <main>
+      <!-- NavBar -->
+      <nav class="navbar sticky-top bg-dark navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Task Scheduler</a>
+          <button
               class="navbar-toggler"
               type="button"
               data-bs-toggle="collapse"
@@ -78,44 +66,22 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#"
-                    >Home</a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    Dropdown
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li>
-                      <a class="dropdown-item" href="#">Another action</a>
-                    </li>
-                    <li>
-                      <hr class="dropdown-divider" />
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">Something else here</a>
-                    </li>
-                  </ul>
+                  <button
+                    type="button"
+                    class="btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addTaskModal">
+                    Add Task
+                  </button>
                 </li>
               </ul>
-              <form class="d-flex" role="search">
+              <form id="searchForm" class="d-flex" role="search">
                 <input
                   class="form-control me-2"
                   type="search"
                   placeholder="Search"
                   aria-label="Search"
-                />
+                  id="searchInput"/>
                 <button class="btn btn-outline-success" type="submit">
                   Search
                 </button>
@@ -218,33 +184,8 @@
               </div>
             </div>
           </div>
-
-          <!-- Filters -->
-          <div class="filters d-flex justify-content-center align-items-center mb-4" id="filters">
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-              <input value="name" type="radio" class="btn-check" name="btnradio" id="sortByName" autocomplete="off">
-              <label class="btn btn-outline-primary" for="sortByName">Name</label>
-            
-              <input value="intensity" type="radio" class="btn-check" name="btnradio" id="sortByIntensity" autocomplete="off">
-              <label class="btn btn-outline-primary" for="sortByIntensity">Intensity</label>
-            
-              <input value="deadline" type="radio" class="btn-check" name="btnradio" id="sortByDeadline" autocomplete="off" checked>
-              <label class="btn btn-outline-primary" for="sortByDeadline">Deadline</label>
-            </div>
-            <!-- <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">
-              <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
-            
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-              <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
-            
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" checked>
-              <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
-            </div> -->
-          </div>
-
           <div id="taskBoard" class="col-10 mx-auto">
-            <table class="table table-hover rounded-3">
+            <table id="dataTable" class="table table-hover rounded-3 display">
               <thead class="table-dark">
                 <tr>
                   <th scope="col" class="text-center">#</th>
@@ -256,45 +197,18 @@
                 </tr>
               </thead>
               <tbody class="table-group-divider">
-                {% if tasks %} {% for task in tasks %}
+                {% if tasks %} 
+                {% for task in tasks %}
                 <tr>
                   <td class="align-middle" scope="row">{{ loop.index }}</td>
                   <td class="align-middle"><strong>{{ task.title|capitalize }}</strong></td>
-                  {% if task.intensity == "0" %}
                   <td class="align-middle">
-                    <span class="text-bg-info rounded-2 px-2 py-1">low</span>
+                    <span class="{% if task.intensity == 'low' %}bg-warning-subtle{% elif task.intensity == 'medium' %}bg-danger-subtle{% else %}text-bg-danger{% endif %} rounded-2 px-2 py-1">{{ task.intensity|capitalize }}</span>
                   </td>
-                  {% elif task.intensity == "1" %}
-                  <td class="align-middle">
-                    <span class="text-bg-warning rounded-2 px-2 py-1"
-                      >medium</span
-                    >
+				          <td class="align-middle">
+                    <span class="{% if task.status == 'pending' %}bg-warning-subtle{% elif task.status == 'completed' %}bg-success-subtle{% else %}text-bg-danger{% endif %} rounded-2 px-2 py-1">{{ task.status|capitalize }}</span>
                   </td>
-                  {% else %}
-                  <td class="align-middle">
-                    <span class="text-bg-danger rounded-2 px-2 py-1">high</span>
-                  </td>
-                  {% endif %}
-
-                  <!-- <td class="align-middle">{{ task.intensity }}</td> -->
-
-
-				          {% if task.status == "0" %}
-                  <td class="align-middle">
-                    <span class="text-bg-warning rounded-2 px-2 py-1">Pending</span>
-                  </td>
-                  {% elif task.status == "1" %}
-                  <td class="align-middle">
-                    <span class="text-bg-success rounded-2 px-2 py-1">Completed</span>
-                  </td>
-                  {% else %}
-                  <td class="align-middle">
-                    <span class="text-bg-danger rounded-2 px-2 py-1">Incomplete</span>
-                  </td>
-                  {% endif %}
-
-                  <!-- <td class="align-middle">{{ task.status }}</td> -->
-                  <td class="align-middle">{{ task.deadline }}</td>
+                  <td class="align-middle">{{ task.deadline|format_date }}</td>
                   <td class="align-middle">
                     <button
                       type="button"
@@ -326,61 +240,61 @@
                             ></button>
                           </div>
                           <div class="modal-body">
-							<form action="/edit_task" method="POST">
-							  <div class="form-group mb-3 text-start">
-								<label for="editTaskName" class="mx-2 mb-1"> <strong>Task Name</strong></label>
-								<input
-								  type="text"
-								  class="form-control"
-								  id="editTaskName"
-								  name="editTaskName"
-								  value="{{ task.title }}"
-								  required
-								>
-							  </div>
-							  <div class="form-row">
-								<div class="form-group mb-3 text-start">
-								  <label for="editIntensity" class="mx-2 mb-1"> <strong>Intensity</strong></label><br />
-								  <select
-									name="editIntensity"
-									id="editIntensity"
-									class="form-select"
-								  >
-									<option value="0" {% if task.intensity == "0" %}selected{% endif %}>low</option>
-									<option value="1" {% if task.intensity == "1" %}selected{% endif %}>medium</option>
-									<option value="2" {% if task.intensity == "2" %}selected{% endif %}>high</option>
-								  </select>
-								</div>
-								<div class="form-group mb-3 text-start">
-									<label for="editStatus" class="mx-2 mb-1"><strong>Status</strong></label>
-									<select name="editStatus" id="editStatus" class="form-select">
-										<option value="0" {% if task.status == "0" %}selected{% endif %}>Pending</option>
-										<option value="1" {% if task.status == "1" %}selected{% endif %}>Completed</option>
-									</select>
-								</div>
-								<div class="form-group mb-3 text-start">
-								  <label for="editDeadline" class="mx-2 mb-1"><strong>Deadline</strong></label>
-								  <input
-									type="date"
-									class="form-control"
-									id="editDeadline"
-									name="editDeadline"
-									value="{{ task.deadline }}"
-								  >
-								</div>
-							  </div>
-							  <input type="hidden" name="task_id" value="{{ task._id }}">
-							  <div class="modal-footer text-center">
-								<button
-								  type="button"
-								  class="btn btn-secondary"
-								  data-bs-dismiss="modal"
-								>
-								  Cancel
-								</button>
-								<button type="submit" class="btn btn-success">Save</button>
-							  </div>
-							</form>
+                            <form action="/edit_task" method="POST">
+                              <div class="form-group mb-3 text-start">
+                              <label for="editTaskName" class="mx-2 mb-1"> <strong>Task Name</strong></label>
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="editTaskName"
+                                name="editTaskName"
+                                value="{{ task.title }}"
+                                required
+                              >
+                              </div>
+                              <div class="form-row">
+                              <div class="form-group mb-3 text-start">
+                                <label for="editIntensity" class="mx-2 mb-1"> <strong>Intensity</strong></label><br />
+                                <select
+                                name="editIntensity"
+                                id="editIntensity"
+                                class="form-select"
+                                >
+                                <option value="0" {% if task.intensity == "low" %}selected{% endif %}>Low</option>
+                                <option value="1" {% if task.intensity == "medium" %}selected{% endif %}>Medium</option>
+                                <option value="2" {% if task.intensity == "high" %}selected{% endif %}>High</option>
+                                </select>
+                              </div>
+                              <div class="form-group mb-3 text-start">
+                                <label for="editStatus" class="mx-2 mb-1"><strong>Status</strong></label>
+                                <select name="editStatus" id="editStatus" class="form-select">
+                                  <option value="pending" {% if task.status == "pending" %}selected{% endif %}>Pending</option>
+                                  <option value="completed" {% if task.status == "completed" %}selected{% endif %}>Completed</option>
+                                </select>
+                              </div>
+                              <div class="form-group mb-3 text-start">
+                                <label for="editDeadline" class="mx-2 mb-1"><strong>Deadline</strong></label>
+                                <input
+                                type="date"
+                                class="form-control"
+                                id="editDeadline"
+                                name="editDeadline"
+                                value="{{ task.deadline }}"
+                                >
+                              </div>
+                              </div>
+                              <input type="hidden" name="task_id" value="{{ task._id }}">
+                              <div class="modal-footer text-center">
+                              <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                              >
+                                Cancel
+                              </button>
+                              <button type="submit" class="btn btn-success">Save</button>
+                              </div>
+                            </form>
                           </div>
                         </div>
                       </div>
@@ -439,7 +353,8 @@
                     </div>
                   </td>
                 </tr>
-                {% endfor %} {% else %}
+                {% endfor %}
+                {% else %}
                 <tr>
                   <td colspan="6" class="text-center">No tasks available</td>
                 </tr>
@@ -470,8 +385,36 @@
             },
           });
         }
+        
+        $(document).ready(function() {
+          // Data passed from Flask to JavaScript
+          const tasks = {{ tasks | tojson }};
+          console.log("tasks: ", tasks);
+          // Check if tasks exist
+          if (tasks.length > 0) {
+            let table = new DataTable('#dataTable',{
+              'searchable': true,
+              "columnDefs": [
+                { "searchable": false, "targets": [ 0, 5 ] },
+                { "orderable": false, "targets": [ 1, 2, 3, 4, 5] }, // Exclude the rest column from ordering
+              ],
+              "initComplete": function(settings, json) {
+                $('.dt-search input').attr('placeholder', 'Search...');
+              }
+            });
+            // Capture search form submission
+            $('#searchForm').on('submit', function(e) {
+              e.preventDefault(); // Prevent default form submission
+              var searchTerm = $('#searchInput').val(); // Get the search term from input
+              table.search(searchTerm).draw(); // Perform DataTable search and redraw table
+              console.log("search term: ", searchTerm);
+            });
+          } 
+          else {
+            console.log("No tasks found");
+          }
+        }); 
       
       </script>
     </body>
-  </html>
 </html>
