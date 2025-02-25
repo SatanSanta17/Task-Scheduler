@@ -52,9 +52,6 @@ Ensure you have Python installed on your system. You can download it from [pytho
 ## Contributing
 Contributions are welcome! Feel free to fork the repository and submit pull requests.
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Contact
-For any questions or suggestions, feel free to reach out at [your-email@example.com](mailto:your-email@example.com).
+For any questions or suggestions, feel free to reach out at [burhanuddinchital25151@gmail.com](mailto:burhanuddinchital25151@gmail.com).
 
